@@ -1,115 +1,223 @@
+'''
 #Task1
 import re
+import unittest
 
-def is_strong_password(password):
-    # At least 8 characters
+def is_strong_password(password: str) -> bool:
     if len(password) < 8:
         return False
-
-    # Must not contain spaces
     if " " in password:
         return False
 
-    # Check required character types
     has_upper = re.search(r"[A-Z]", password)
     has_lower = re.search(r"[a-z]", password)
-    has_digit = re.search(r"[0-9]", password)
-    has_special = re.search(r"[^\w]", password)  # any non-alphanumeric/underscore
+    has_digit = re.search(r"\d", password)
+    has_special = re.search(r"[^\w]", password)
 
-    return all([has_upper, has_lower, has_digit, has_special])
+    return all((has_upper, has_lower, has_digit, has_special))
 
 
-# AI-generated assert test cases
+# assert tests
 assert is_strong_password("Abcd@123") == True
 assert is_strong_password("abcd123") == False
-assert is_strong_password("ABcd1234") == False   # no special char
-assert is_strong_password("ABCD@1234") == False  # no lowercase
-assert is_strong_password("Abc d@123") == False  # contains space
+assert is_strong_password("ABCdef12!") == True
 
-print("All tests passed.")
-#Explanation: The function is_strong_password checks if the given password meets the specified criteria for a strong password. It first checks if the length of the password is at least 8 characters and if it does not contain any spaces. Then, it uses regular expressions to check for the presence of at least one uppercase letter, one lowercase letter, one digit, and one special character. The function returns True if all conditions are met, otherwise it returns False. The assert statements are used to test the function with various passwords to ensure it behaves as expected.        
+# docker-style tests
+assert is_strong_password("StrongPass1!") == True
+assert is_strong_password("weakpass1") == False
+assert is_strong_password("NoSpecialChar1") == False
+
+print("Assert & Docker tests passed")
+
+
+# unittest tests
+class TestPassword(unittest.TestCase):
+
+    def test_valid(self):
+        self.assertTrue(is_strong_password("ValidPass1@"))
+
+    def test_no_upper(self):
+        self.assertFalse(is_strong_password("validpass1@"))
+
+    def test_has_space(self):
+        self.assertFalse(is_strong_password("Valid Pass1@"))
+
+    def test_no_special(self):
+        self.assertFalse(is_strong_password("ValidPass12"))
+
+
+# pytest-compatible tests
+def test_py_valid():
+    assert is_strong_password("Another1@") == True
+
+def test_py_short():
+    assert is_strong_password("A1@a") == False
+
+def test_py_no_digit():
+    assert is_strong_password("NoDigit@@") == False
+
+
+if __name__ == "__main__":
+    unittest.main()
+
+#Explanation: The function is_strong_password checks if a given password meets specific criteria for strength. It first checks if the password is at least 8 characters long and does not contain spaces. Then, it uses regular expressions to check for the presence of at least one uppercase letter, one lowercase letter, one digit, and one special character. The assert statements test the function with various passwords to ensure it correctly identifies strong and weak passwords. The unittest class provides structured tests for different scenarios, while the pytest-compatible functions allow for additional testing in a more flexible manner. 
+
 
 
 #Task2
-def classify_number(n):
-    # Handle invalid inputs
-    if not isinstance(n, (int, float)):
-        return "Invalid Input"
+import unittest
 
-    # Using a loop (single-iteration logic for demonstration)
-    for _ in range(1):
-        if n > 0:
+def classify_number(n):
+    if not isinstance(n, (int, float)) or n is None:
+        return "Invalid"
+
+    # loop-based sign detection
+    if n == 0:
+        return "Zero"
+
+    step = 1 if n > 0 else -1
+    temp = 0
+    while True:
+        temp += step
+        if temp == 1:
             return "Positive"
-        elif n < 0:
+        if temp == -1:
             return "Negative"
-        else:
-            return "Zero"
-# Normal cases
+
+
+# assert tests
 assert classify_number(10) == "Positive"
 assert classify_number(-5) == "Negative"
 assert classify_number(0) == "Zero"
 
-# Boundary conditions
-assert classify_number(1) == "Positive"
+# boundary cases
 assert classify_number(-1) == "Negative"
+assert classify_number(1) == "Positive"
 
-# Invalid inputs
-assert classify_number("abc") == "Invalid Input"
-assert classify_number(None) == "Invalid Input"
+# invalid inputs
+assert classify_number("abc") == "Invalid"
+assert classify_number(None) == "Invalid"
 
-print("All tests passed.")
-#Explanation: The function classify_number takes an input n and classifies it as "Positive", "Negative", or "Zero". It first checks if the input is a valid number (integer or float). If the input is invalid, it returns "Invalid Input". Then, it uses a loop (with a single iteration) to check if n is greater than 0 (positive), less than 0 (negative), or equal to 0 (zero) and returns the appropriate classification. The assert statements test the function with normal cases, boundary conditions, and invalid inputs to ensure it behaves correctly in all scenarios. 
+print("Assert tests passed")
 
+# unittest tests
+class TestNumber(unittest.TestCase):
+
+    def test_positive(self):
+        self.assertEqual(classify_number(4), "Positive")
+
+    def test_negative(self):
+        self.assertEqual(classify_number(-2), "Negative")
+
+    def test_zero(self):
+        self.assertEqual(classify_number(0), "Zero")
+
+    def test_invalid(self):
+        self.assertEqual(classify_number([]), "Invalid")
+
+# pytest compatible tests
+def test_py_positive():
+    assert classify_number(3) == "Positive"
+
+def test_py_negative():
+    assert classify_number(-3) == "Negative"
+
+def test_py_invalid():
+    assert classify_number({}) == "Invalid"
+
+if __name__ == "__main__":
+    unittest.main()
+
+#Explanation: The function classify_number determines if a given input is a positive number, negative number, zero, or invalid. It first checks if the input is an instance of int or float and not None. If the input is valid, it uses a loop to determine the sign of the number by incrementing or decrementing a temporary variable until it reaches 1 or -1. The assert statements test the function with various inputs, including valid numbers and invalid types. The unittest class provides structured tests for different scenarios, while the pytest-compatible functions allow for additional testing in a more flexible manner.  
 
 #Task3
+import unittest
 import string
 
 def is_anagram(str1, str2):
-    # Normalize strings: lowercase, remove spaces and punctuation
+    # normalize: lowercase, remove spaces & punctuation
     def clean(s):
         return sorted(
             ch.lower()
             for ch in s
-            if ch.isalnum()   # keep only letters and digits
+            if ch.isalnum()
         )
+
+    if str1 is None or str2 is None:
+        return False
 
     return clean(str1) == clean(str2)
 
-# Given examples
+
+# assert tests
 assert is_anagram("listen", "silent") == True
 assert is_anagram("hello", "world") == False
 assert is_anagram("Dormitory", "Dirty Room") == True
 
-# Edge cases
-assert is_anagram("", "") == True                 # empty strings
-assert is_anagram("Tea", "Eat") == True           # case-insensitive
-assert is_anagram("A gentleman!", "Elegant man") == True  # punctuation ignored
+# edge cases
+assert is_anagram("", "") == True
+assert is_anagram("Same", "Same") == True
+assert is_anagram("Astronomer", "Moon starer") == True
 
-print("All tests passed.")
-#Explanation: The function is_anagram checks if two strings are anagrams by normalizing them. The inner function clean takes a string, converts it to lowercase, and removes any spaces and punctuation, keeping only alphanumeric characters. It then sorts the characters of the cleaned string. The main function compares the sorted character lists of both strings to determine if they are anagrams. The assert statements test the function with the provided examples and additional edge cases to ensure it works correctly in various scenarios. 
+print("Assert tests passed")
 
+
+# unittest tests
+class TestAnagram(unittest.TestCase):
+
+    def test_true(self):
+        self.assertTrue(is_anagram("Triangle", "Integral"))
+
+    def test_false(self):
+        self.assertFalse(is_anagram("Apple", "Pabble"))
+
+    def test_empty(self):
+        self.assertTrue(is_anagram("", ""))
+
+    def test_case_space(self):
+        self.assertTrue(is_anagram("School master", "The classroom"))
+
+
+# pytest compatible tests
+def test_py_true():
+    assert is_anagram("Debit Card", "Bad Credit") == True
+
+def test_py_false():
+    assert is_anagram("Test", "Best") == False
+
+def test_py_identical():
+    assert is_anagram("Python", "Python") == True
+
+
+if __name__ == "__main__":
+    unittest.main()
+
+#Explanation: The function is_anagram checks if two strings are anagrams by normalizing them (converting to lowercase and removing spaces and punctuation) and then comparing the sorted characters. If the sorted characters of both strings are the same, they are anagrams. The assert statements test the function with various pairs of strings, including edge cases like empty strings and identical strings. The unittest class provides structured tests for different scenarios, while the pytest-compatible functions allow for additional testing in a more flexible manner.    
 
 #Task4
+import unittest
+
 class Inventory:
+
     def __init__(self):
-        # Dictionary to store item stock
-        self.items = {}
+        self.stock = {}
 
     def add_item(self, name, quantity):
         if quantity <= 0:
             return
-        self.items[name] = self.items.get(name, 0) + quantity
+        self.stock[name] = self.stock.get(name, 0) + quantity
 
     def remove_item(self, name, quantity):
-        if name in self.items and quantity > 0:
-            self.items[name] = max(0, self.items[name] - quantity)
+        if name not in self.stock or quantity <= 0:
+            return
+        self.stock[name] = max(0, self.stock[name] - quantity)
 
     def get_stock(self, name):
-        return self.items.get(name, 0)
+        return self.stock.get(name, 0)
 
+
+# assert tests
 inv = Inventory()
-
-# Example tests
 inv.add_item("Pen", 10)
 assert inv.get_stock("Pen") == 10
 
@@ -119,36 +227,122 @@ assert inv.get_stock("Pen") == 5
 inv.add_item("Book", 3)
 assert inv.get_stock("Book") == 3
 
-# Additional AI-generated tests
-inv.remove_item("Pen", 10)     # removing more than available
+# extra edge tests
+inv.remove_item("Pen", 20)     # removing more than stock
 assert inv.get_stock("Pen") == 0
 
-assert inv.get_stock("Pencil") == 0   # item not added yet
+assert inv.get_stock("Pencil") == 0   # item not present
 
-print("All tests passed.")
-#Explanation: The Inventory class manages a collection of items and their stock levels. The add_item method adds a specified quantity of an item to the inventory, while the remove_item method reduces the stock of an item, ensuring it does not go below zero. The get_stock method returns the current stock level of a specified item. The assert statements test the functionality of the Inventory class with various scenarios, including adding and removing items, as well as checking stock levels for existing and non-existing items.  
+print("Assert tests passed")
 
+
+# unittest tests
+class TestInventory(unittest.TestCase):
+
+    def test_add(self):
+        i = Inventory()
+        i.add_item("Notebook", 4)
+        self.assertEqual(i.get_stock("Notebook"), 4)
+
+    def test_remove(self):
+        i = Inventory()
+        i.add_item("Marker", 6)
+        i.remove_item("Marker", 2)
+        self.assertEqual(i.get_stock("Marker"), 4)
+
+    def test_remove_overflow(self):
+        i = Inventory()
+        i.add_item("Eraser", 2)
+        i.remove_item("Eraser", 5)
+        self.assertEqual(i.get_stock("Eraser"), 0)
+
+    def test_missing(self):
+        i = Inventory()
+        self.assertEqual(i.get_stock("Unknown"), 0)
+
+
+# pytest compatible tests
+def test_py_add():
+    i = Inventory()
+    i.add_item("Bag", 1)
+    assert i.get_stock("Bag") == 1
+
+def test_py_remove():
+    i = Inventory()
+    i.add_item("Bag", 5)
+    i.remove_item("Bag", 3)
+    assert i.get_stock("Bag") == 2
+
+def test_py_missing():
+    i = Inventory()
+    assert i.get_stock("Nothing") == 0
+
+
+if __name__ == "__main__":
+    unittest.main()
+
+#Explanation: The Inventory class manages a simple stock system where you can add items, remove items, and check the stock of an item. The add_item method increases the stock of a given item by a specified quantity, while the remove_item method decreases the stock but ensures it does not go below zero. The get_stock method returns the current stock of an item or zero if the item is not present. The assert statements test the functionality of adding and removing items, as well as edge cases like removing more than the available stock and checking for items that do not exist. The unittest class provides structured tests for different scenarios, while the pytest-compatible functions allow for additional testing in a more flexible manner.    
+
+'''
 #Task5
+import unittest
 from datetime import datetime
 
 def validate_and_format_date(date_str):
+    if not isinstance(date_str, str):
+        return "Invalid Date"
     try:
-        # Parse input in MM/DD/YYYY format
-        dt = datetime.strptime(date_str, "%m/%d/%Y")
-        # Convert to YYYY-MM-DD format
-        return dt.strftime("%Y-%m-%d")
+        d = datetime.strptime(date_str, "%m/%d/%Y")
+        return d.strftime("%Y-%m-%d")
     except:
         return "Invalid Date"
 
-# Given examples
+
+# assert tests
 assert validate_and_format_date("10/15/2023") == "2023-10-15"
 assert validate_and_format_date("02/30/2023") == "Invalid Date"
 assert validate_and_format_date("01/01/2024") == "2024-01-01"
 
-# Edge cases
-assert validate_and_format_date("13/01/2023") == "Invalid Date"   # invalid month
-assert validate_and_format_date("abc") == "Invalid Date"          # wrong format
-assert validate_and_format_date("02/29/2024") == "2024-02-29"     # leap year valid
+# edge cases
+assert validate_and_format_date("13/01/2024") == "Invalid Date"   # invalid month
+assert validate_and_format_date("abc") == "Invalid Date"
+assert validate_and_format_date(None) == "Invalid Date"
 
-print("All tests passed.")
-#Explanation: The function validate_and_format_date takes a date string as input and attempts to parse it using the datetime.strptime method with the expected format of MM/DD/YYYY. If the parsing is successful, it converts the date to the desired format of YYYY-MM-DD using strftime. If the input date is invalid or does not match the expected format, the function returns "Invalid Date". The assert statements test the function with valid dates, invalid dates, and edge cases to ensure it behaves correctly in all scenarios.   
+print("Assert tests passed")
+
+# unittest tests
+class TestDate(unittest.TestCase):
+
+    def test_valid(self):
+        self.assertEqual(
+            validate_and_format_date("12/25/2022"),
+            "2022-12-25"
+        )
+
+    def test_invalid_day(self):
+        self.assertEqual(
+            validate_and_format_date("02/31/2022"),
+            "Invalid Date"
+        )
+
+    def test_invalid_format(self):
+        self.assertEqual(
+            validate_and_format_date("2022-12-25"),
+            "Invalid Date"
+        )
+
+# pytest compatible tests
+def test_py_valid():
+    assert validate_and_format_date("07/04/2020") == "2020-07-04"
+
+def test_py_invalid():
+    assert validate_and_format_date("00/10/2020") == "Invalid Date"
+
+def test_py_type():
+    assert validate_and_format_date(12345) == "Invalid Date"
+
+
+if __name__ == "__main__":
+    unittest.main()
+
+#Explanation: The function validate_and_format_date takes a string input and checks if it is a valid date in the format "MM/DD/YYYY". It uses the datetime module to attempt to parse the date string. If parsing is successful, it returns the date in the format "YYYY-MM-DD". If parsing fails (due to an invalid date or incorrect format), it returns "Invalid Date". The assert statements test the function with various valid and invalid date strings, including edge cases. The unittest class provides structured tests for different scenarios, while the pytest-compatible functions allow for additional testing in a more flexible manner.   
