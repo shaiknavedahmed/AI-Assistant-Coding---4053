@@ -1,0 +1,293 @@
+<!---Task 1 – Image Gallery Website
+Create an image gallery web page.
+Requirements:
+• Display images in a grid layout.
+• Use AI to:
+o Optimize layout using CSS Grid.
+o Add hover zoom or overlay effects.
+o Ensure mobile responsiveness.-->
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Gallery</title>
+    <style>        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            padding: 10px;
+        }
+        .gallery img {            width: 100%;
+            height: auto;            transition: transform 0.3s ease;
+        }
+        .gallery img:hover {            transform: scale(1.1);
+        }        @media (max-width: 600px) {
+            .gallery {                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }        }
+    </style></head>
+<body>    <h1 style="text-align: center; padding: 20px;">Image Gallery</h1>
+    <div class="gallery">        <img src="https://via.placeholder.com/400x300" alt="Image 1">
+        <img src="https://via.placeholder.com/400x300" alt="Image 2">
+        <img src="https://via.placeholder.com/400x300" alt="Image 3">
+        <img src="https://via.placeholder.com/400x300" alt="Image 4">
+        <img src="https://via.placeholder.com/400x300" alt="Image 5">
+        <img src="https://via.placeholder.com/400x300" alt="Image 6">
+    </div></body></html>     -->
+
+
+<!--Task 2 – Profile Card Generator
+Create a profile card web page.
+Requirements:
+• Display user image, name, role, and social media links.
+• Use AI to:
+o Suggest modern UI colors and fonts.
+o Design the card using Flexbox.
+o Add hover animation and shadow effects-->
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Card</title>
+    <style>        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }        .profile-card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }        .profile-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }        .profile-card img {            width: 100px;
+            height: 100px;            border-radius: 50%;
+            margin-bottom: 15px;
+        }        .profile-card h2 {            margin: 0;
+            font-size: 1.5em;
+            color: #333333;
+        }        .profile-card p {            color: #777777;
+            margin: 5px 0;
+        }        .social-links {            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }        .social-links a {            color: #555555;
+            text-decoration: none;
+            font-size: 1.2em;
+        }        .social-links a:hover {            color: #000000;
+        }    </style></head>
+<body>    <div class="profile-card">        <img src="https://via.placeholder.com/100" alt="User Image">
+        <h2>John        Doe</h2>        <p>Web Developer</p>
+        <div class="social-links">            <a href="#">&#x1F426;</a>
+            <a href="#">&#x1F4F7;</a>
+            <a href="#">&#x1F4F1;</a>
+        </div>    </div></body></html>   -->
+
+    
+
+<!--Task 3 -Develop a dynamic shopping cart system.
+Requirements:
+• Add, remove, and update product quantities.
+• Display real-time total price.
+• Use AI to:
+o Manage cart state using JavaScript objects.
+o Persist cart data in localStorage.-->
+<!-- <!DOCTYPE html>
+<html>
+<head>
+<title>Cart</title>
+</head>
+<body>
+
+<h2>Products</h2>
+<button onclick="addItem('Laptop', 50000)">Add Laptop</button>
+<button onclick="addItem('Phone', 20000)">Add Phone</button>
+
+<h2>Cart</h2>
+<ul id="cart"></ul>
+<h3>Total: ₹<span id="total">0</span></h3>
+
+<script>
+let cart = JSON.parse(localStorage.getItem("cart")) || {};
+
+function addItem(name, price) {
+  if (!cart[name]) cart[name] = {price, qty: 0};
+  cart[name].qty++;
+  updateCart();
+}
+
+function removeItem(name) {
+  delete cart[name];
+  updateCart();
+}
+
+function updateCart() {
+  localStorage.setItem("cart", JSON.stringify(cart));
+  let list = document.getElementById("cart");
+  list.innerHTML = "";
+  let total = 0;
+
+  for (let item in cart) {
+    let li = document.createElement("li");
+    let p = cart[item].price * cart[item].qty;
+    total += p;
+
+    li.innerHTML = `${item} x ${cart[item].qty} = ₹${p}
+    <button onclick="removeItem('${item}')">Remove</button>`;
+    list.appendChild(li);
+  }
+
+  document.getElementById("total").innerText = total;
+}
+
+updateCart();
+</script>
+
+</body>
+</html> -->
+
+<!--Task 4 – Role-Based Access Control Application
+Create a role-based web application.
+Requirements:
+• Admin, Editor, User roles.
+• Conditional UI rendering.
+• Use AI to:
+o Design access control logic.
+o Maintain secure state transitions.
+o Create scalable UI components.-->
+<!-- <!DOCTYPE html>
+<html>
+<body>
+
+<select id="role" onchange="renderUI()">
+  <option value="user">User</option>
+  <option value="editor">Editor</option>
+  <option value="admin">Admin</option>
+</select>
+
+<div id="content"></div>
+
+<script>
+function renderUI() {
+  let role = document.getElementById("role").value;
+  let content = document.getElementById("content");
+
+  let html = "<h3>Common Dashboard</h3>";
+
+  if (role === "admin") {
+    html += "<p>Admin Panel: Manage Users</p>";
+  }
+  if (role === "editor" || role === "admin") {
+    html += "<p>Editor Panel: Edit Content</p>";
+  }
+  if (role === "user") {
+    html += "<p>User Panel: View Content</p>";
+  }
+
+  content.innerHTML = html;
+}
+
+renderUI();
+</script>
+
+</body>
+</html> -->
+
+<!--Task 5 – Multi-Language Website
+Design a multilingual website.
+Requirements:
+• Switch languages dynamically.
+• Persist language preference.
+• Use AI to:
+o Structure translation files.
+o Handle RTL/LTR layouts.
+o Improve accessibility.-->
+<!-- <!DOCTYPE html>
+<html>
+<body>
+
+<select onchange="changeLang(this.value)">
+  <option value="en">English</option>
+  <option value="hi">Hindi</option>
+</select>
+
+<h1 id="title"></h1>
+
+<script>
+const translations = {
+  en: {title: "Welcome"},
+  hi: {title: "स्वागत है"}
+};
+
+function changeLang(lang) {
+  localStorage.setItem("lang", lang);
+  document.getElementById("title").innerText = translations[lang].title;
+}
+
+let saved = localStorage.getItem("lang") || "en";
+changeLang(saved);
+</script>
+
+</body>
+</html> -->
+
+<!--Task 6 – Online Examination System
+Create an online exam interface.
+Requirements:
+• Timer, questions, and submission.
+• Prevent multiple submissions.
+• Use AI to:
+o Manage exam state.
+o Improve exam UX.
+o Ensure accessibility.-->
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2 id="timer">Time: 30</h2>
+
+<form id="quiz">
+  <p>1. Capital of India?</p>
+  <input type="radio" name="q1" value="Delhi"> Delhi<br>
+  <input type="radio" name="q1" value="Mumbai"> Mumbai<br>
+</form>
+
+<button onclick="submitExam()">Submit</button>
+
+<script>
+let time = 30;
+let submitted = false;
+
+let timer = setInterval(() => {
+  if (time <= 0) {
+    clearInterval(timer);
+    submitExam();
+  }
+  document.getElementById("timer").innerText = "Time: " + time--;
+}, 1000);
+
+function submitExam() {
+  if (submitted) return;
+  submitted = true;
+
+  let answer = document.querySelector('input[name="q1"]:checked');
+  alert(answer && answer.value === "Delhi" ? "Correct" : "Wrong");
+}
+</script>
+
+</body>
+</html>
