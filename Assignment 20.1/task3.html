@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2>Feedback Form</h2>
+
+<input type="text" id="feedback" placeholder="Enter feedback">
+<button onclick="showFeedback()">Submit</button>
+
+<p id="output"></p>
+
+<script>
+function showFeedback() {
+    let userInput = document.getElementById("feedback").value;
+
+    // ❌ Vulnerable to XSS
+    document.getElementById("output").innerHTML = userInput;
+}
+</script>
+
+</body>
+</html>
+
+<!--
+This code is vulnerable to Cross-Site Scripting (XSS) attacks because it directly inserts user input into the HTML without any sanitization. An attacker could input malicious JavaScript code, which would then be executed in the context of the page, potentially leading to data theft, session hijacking, or other malicious activities. To mitigate this vulnerability, user input should be properly sanitized or escaped before being inserted into the DOM. For example, using textContent instead of innerHTML can help prevent XSS attacks by treating the input as plain text rather than HTML.
+-->
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self';">
+</head>
+<body>
+
+<h2>Feedback Form</h2>
+
+<input type="text" id="feedback" placeholder="Enter feedback">
+<button onclick="showFeedback()">Submit</button>
+
+<p id="output"></p>
+
+<script>
+function escapeHTML(str) {
+    return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function showFeedback() {
+    let userInput = document.getElementById("feedback").value;
+
+    // ✅ Safe: Escaping input
+    document.getElementById("output").innerHTML = escapeHTML(userInput);
+}
+</script>
+
+</body>
+</html>
